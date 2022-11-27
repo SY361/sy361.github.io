@@ -1,0 +1,113 @@
+
+<!DOCTYPE html>
+<!--你干嘛,哈哈,哎呦-->
+<html lang="en">
+  <head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<title>风之海服务器 | FengZHai Server</title>
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+	<link href="./Files/css" rel="stylesheet">
+	<link href="./Files/css(1)" rel="stylesheet">
+	<link rel="stylesheet" href="./Files/themify-icons.css">
+	<link rel="stylesheet" href="./Files/icon-font.min.css">
+	<link rel="stylesheet" href="./Files/all.css">
+	<link rel="stylesheet" href="./Files/owl.theme.default.min.css">
+	<link rel="stylesheet" href="./Files/owl.carousel.min.css">
+	<link rel="stylesheet" href="./Files/bootstrap.min.css">
+    <link rel="stylesheet" href="./Files/style.css">
+	<style>
+		body {
+				/*加载背景图：图片地址 不平铺 */
+				background: url(./Files/background.png) no-repeat;
+				/* 让背景图基于容器大小伸缩 */
+				background-size: 100% 100%;
+				background-attachment: fixed;
+			}
+    </style>
+</head>
+<body>
+	<div class="side_menu">
+        <ul class="list menu_right">
+            <li>
+                <a href="">主页</a>
+            </li>
+            <li>
+                <a href="">规则</a>
+            </li>
+            <li>
+                <a href="">游戏</a>
+            </li>
+            <li>
+                <a href="">联系我们</a>
+            </li>
+        </ul>
+	</div>
+	<div class="canvus_menu">
+		<div class="container">
+			<div class="float-right">
+				<div class="toggle_icon" title="">
+					<span></span>
+				</div>
+			</div>
+		</div>
+	</div>
+  <header class="hero-banner project-bg">
+    <div class="container">
+      <h2 class="section-intro__subtitle"><span>风之海服务器</span></h2>
+      <div class="btn-group breadcrumb">
+        <a href="minecraft://?addExternalServer=风之海|play.mcfzh.asia:19132" class="btn">
+        想游玩了?</a><span class="btn btn--rightBorder"><a href="minecraft://?addExternalServer=风之海|play.mcfzh.asia:19132">点我加入</a></span>
+      </div>
+    </div>
+  </header>
+  	<section class="about section-margin mb-5">
+		<div class="container">
+			<div class="row align-items-center">
+				<div class="col-md-5">
+					<div class="about__img text-center text-md-left mb-5 mb-md-0">
+						<img class="img-fluid" src="./Files/about.png" alt="">
+					</div>
+				</div>
+				<div class="col-md-7 pl-xl-5">
+					<p> 风之海服务器是国内基岩版最大的小游戏服务器之一,使用优化的Nukkit和WaterDog搭建群组服务器 (开服时长30月+)
+				</p></div>
+			</div>
+		</div>
+	</section>
+    <footer class="footer footer-bg">
+		<div class="container">
+			<div class="row">
+				<div class="col-sm-4 col-lg-2 mb-4 mb-lg-0 text-left">
+					<h3 class="footer__title">链接</h3>
+					<ul class="footer__link">
+                        <li><a href="https://minecraftpocket-servers.com/server/120914//vote">Vote</a></li>
+						<li><a href="https://space.bilibili.com/486812331">Bilibili</a></li>
+					</ul>
+				</div>
+			</div>
+            <p></p><p></p><p></p><p></p><p></p><p></p><p><a href="https://minecraftpocket-servers.com/server/120914/"><img src="https://minecraftpocket-servers.com/server/120914/banners/half-banner-3.png" border="0"></a>
+			</p><div class="d-sm-flex justify-content-between footer__bottom top-border">
+				<p>
+                    Copyright ©<script>document.write(new Date().getFullYear());</script> 风之海 Network
+			    </p>
+            </div>
+		</div>
+	</footer>
+	<script src="./Files/jquery-3.2.1.min.js"></script>	
+	
+  	<script src="./Files/owl.carousel.min.js"></script>
+  <script>
+	var dropToggle = $('.menu_right > li').has('ul').children('a');
+	dropToggle.on('click', function() {
+		dropToggle.not(this).closest('li').find('ul').slideUp(200);
+		$(this).closest('li').children('ul').slideToggle(200);
+		return false;
+	});
+	$( ".toggle_icon" ).on('click', function() {
+		$( 'body' ).toggleClass( "open" );
+	});
+  </script>
+  </body>
+</html>
