@@ -12,6 +12,9 @@ body {
   -webkit-background-attachment: fixed;
   background-attachment: fixed;
   color: #fff;
+<HEAD>
+<link rel = "Shortcut Icon" href=/favicon.ico>
+</HEAD>
 }
 
 body::before {
