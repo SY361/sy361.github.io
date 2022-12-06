@@ -1,40 +1,6 @@
 const MODE_NORMAL = 1, MODE_ENDLESS = 2, MODE_PRACTICE = 3;
 
 (function(w) {
-    function getJsonI18N() {
-        // https://developer.mozilla.org/zh-CN/docs/Web/API/Navigator/language
-        
-        const LANGUAGES = [
-            { regex: /^zh\b/, lang: 'zh' },
-            { regex: /^ja\b/, lang: 'ja' },
-            { regex: /.*/, lang: 'en'}
-        ]
-
-        const lang = LANGUAGES.find(l => l.regex.test(navigator.language)).lang
-        
-        return $.ajax({
-            url: `./static/i18n/${lang}.json`,
-            dataType: 'json',
-            method: 'GET',
-            async: false,
-            success: data => res = data,
-            error: () => alert('找不到语言文件: ' + lang)
-        }).responseJSON
-    }
-
-    const I18N = getJsonI18N()
-
-    $('[data-i18n]').each(function() {
-        const content = I18N[this.dataset.i18n];
-        $(this).text(content);
-    });
-
-    $('[data-placeholder-i18n]').each(function() {
-        $(this).attr('placeholder', I18N[this.dataset.placeholderI18n]);
-    });
-
-    $('html').attr('lang', I18N['lang']);
-
     let isDesktop = !navigator['userAgent'].match(/(ipad|iphone|ipod|android|windows phone)/i);
     let fontunit = isDesktop ? 20 : ((window.innerWidth > window.innerHeight ? window.innerHeight : window.innerWidth) / 320) * 10;
     document.write('<style type="text/css">' +
@@ -59,8 +25,6 @@ const MODE_NORMAL = 1, MODE_ENDLESS = 2, MODE_PRACTICE = 3;
     let transform, transitionDuration, welcomeLayerClosed;
 
     let mode = getMode();
-
-    let soundMode = getSoundMode();
 
     w.init = function() {
         showWelcomeLayer();
@@ -87,27 +51,11 @@ const MODE_NORMAL = 1, MODE_ENDLESS = 2, MODE_PRACTICE = 3;
 
     function getMode() {
         //有cookie优先返回cookie记录的，没有再返回normal
-        return cookie('gameMode') ? parseInt(cookie('gameMode')) : MODE_NORMAL;
-    }
-
-    function getSoundMode() {
-        // 默认为 on
-        return cookie('soundMode') ? cookie('soundMode') : 'on';
-    }
-
-    w.changeSoundMode = function() {
-        if (soundMode === 'on') {
-            soundMode = 'off';
-            $('#sound').text(I18N['sound-off']);
-        } else {
-            soundMode = 'on';
-            $('#sound').text(I18N['sound-on']);
-        }
-        cookie('soundMode', soundMode);
+        return cookie('gameMode') ? cookie('gameMode') : MODE_NORMAL;
     }
 
     function modeToString(m) {
-        return m === MODE_NORMAL ? I18N['normal'] : (m === MODE_ENDLESS ? I18N['endless'] : I18N['practice']);
+        return m === MODE_NORMAL ? "普通模式" : (m === MODE_ENDLESS ? "无尽模式" : "练习模式");
     }
 
     w.changeMode = function(m) {
@@ -230,12 +178,10 @@ const MODE_NORMAL = 1, MODE_ENDLESS = 2, MODE_PRACTICE = 3;
         _gameTimeNum--;
         _gameStartTime++;
         if (mode === MODE_NORMAL && _gameTimeNum <= 0) {
-            GameTimeLayer.innerHTML = I18N['time-up'] + '!';
+            GameTimeLayer.innerHTML = '&nbsp;&nbsp;&nbsp;&nbsp;时间到！';
             gameOver();
             GameLayerBG.className += ' flash';
-            if (soundMode === 'on') {
-                createjs.Sound.play("end");
-            }
+            createjs.Sound.play("end");
         }
         updatePanel();
     }
@@ -247,7 +193,7 @@ const MODE_NORMAL = 1, MODE_ENDLESS = 2, MODE_PRACTICE = 3;
             }
         } else if (mode === MODE_ENDLESS) {
             let cps = getCPS();
-            let text = (cps === 0 ? I18N['calculating'] : cps.toFixed(2));
+            let text = (cps === 0 ? '计算中' : cps.toFixed(2));
             GameTimeLayer.innerHTML = `CPS:${text}`;
         } else {
             GameTimeLayer.innerHTML = `SCORE:${_gameScore}`;
@@ -278,19 +224,40 @@ const MODE_NORMAL = 1, MODE_ENDLESS = 2, MODE_PRACTICE = 3;
     }
 
     function SubmitResults() {
+        let system = "其他操作系统";
+        let area = "异世界";
         if ($("#username").val() && _gameSettingNum === 20) {
+            const systems = [
+                ['Win', 'Windows'],
+                ['like Mac', 'iOS'],
+                ['Mac', 'Macintosh'],
+                ['Android', 'Android'],
+                ['Linux', 'Linux'],
+            ];
+
+            for (let sys of systems) {
+                if (navigator.appVersion.indexOf(sys[0]) !== -1) {
+                    system = sys[1];
+                    break;
+                }
+            }
+
+            if (returnCitySN && returnCitySN['cname']) {
+                area = returnCitySN['cname']
+            }
+
             let httpRequest = new XMLHttpRequest();
             httpRequest.open('POST', './SubmitResults.php', true);
             httpRequest.setRequestHeader("Content-type", "application/json");
             let name = $("#username").val();
             let message = $("#message").val();
             let test = "|_|";
-            httpRequest.send(encrypt(_gameScore + test + name + test + tj + test + message));
+            httpRequest.send(encrypt(_gameScore + test + name + test + tj + test + system + test + area + test + message));
         }
     }
 
     function createTimeText(n) {
-        return 'TIME:' + Math.ceil(n);
+        return '&nbsp;TIME:' + Math.ceil(n);
     }
 
     let _ttreg = / t{1,2}(\d+)/,
@@ -362,9 +329,7 @@ const MODE_NORMAL = 1, MODE_ENDLESS = 2, MODE_PRACTICE = 3;
             if (!_gameStart) {
                 gameStart();
             }
-            if (soundMode === 'on') {
-                createjs.Sound.play("tap");
-            }
+            createjs.Sound.play("tap");
             tar = document.getElementById(p.id);
             tar.className = tar.className.replace(_ttreg, ' tt$1');
             _gameBBListIndex++;
@@ -374,9 +339,7 @@ const MODE_NORMAL = 1, MODE_ENDLESS = 2, MODE_PRACTICE = 3;
 
             gameLayerMoveNextRow();
         } else if (_gameStart && !tar.notEmpty) {
-            if (soundMode === 'on') {
-                createjs.Sound.play("err");
-            }
+            createjs.Sound.play("err");
             tar.classList.add('bad');
             if (mode === MODE_PRACTICE) {
                 setTimeout(() => {
@@ -403,7 +366,7 @@ const MODE_NORMAL = 1, MODE_ENDLESS = 2, MODE_PRACTICE = 3;
             html += '</div>';
         }
         html += '</div>';
-        html += '<div id="GameTimeLayer" class="text-center"></div>';
+        html += '<div id="GameTimeLayer"></div>';
         return html;
     }
 
@@ -443,12 +406,12 @@ const MODE_NORMAL = 1, MODE_ENDLESS = 2, MODE_PRACTICE = 3;
         l.attr('class', l.attr('class').replace(/bgc\d/, 'bgc' + c));
         $('#GameScoreLayer-text').html(shareText(cps));
         let normalCond = legalDeviationTime() || mode !== MODE_NORMAL;
-        l.css('color', normalCond ? '': 'red');
+        //显示CPS
 
-        $('#cps').text(cps.toFixed(2));
-        $('#score').text(scoreToString(score));
-        $('#GameScoreLayer-score').css('display', mode === MODE_ENDLESS ? 'none' : '');
-        $('#best').text(scoreToString(best));
+        $('#GameScoreLayer-CPS').html('CPS&nbsp;' + cps.toFixed(2)); //获取CPS
+        $('#GameScoreLayer-score').css('display', mode === MODE_ENDLESS ? 'none' : '')
+            .html('得分&nbsp;' + (normalCond ? score : "<span style='color:red;'>" + score + "</span>"));
+        $('#GameScoreLayer-bast').html('最佳&nbsp;' + scoreToString(best));
 
         l.css('display', 'block');
     }
@@ -473,16 +436,16 @@ const MODE_NORMAL = 1, MODE_ENDLESS = 2, MODE_PRACTICE = 3;
             let date2 = new Date();
             deviationTime = (date2.getTime() - _date1.getTime())
             if (!legalDeviationTime()) {
-                return I18N['time-over'] + ((deviationTime / 1000) - _gameSettingNum).toFixed(2) + 's';
+                return '倒计时多了' + ((deviationTime / 1000) - 20).toFixed(2) + "s";
             }
             SubmitResults();
         }
 
-        if (cps <= 5) return I18N['text-level-1'];
-        if (cps <= 8) return I18N['text-level-2'];
-        if (cps <= 10)  return I18N['text-level-3'];
-        if (cps <= 15) return I18N['text-level-4'];
-        return I18N['text-level-5'];
+        if (cps <= 5) return '试着好好练一下？';
+        if (cps <= 8) return 'TCL';
+        if (cps <= 10)  return 'TQL';
+        if (cps <= 15) return '您';
+        return '人？';
     }
 
     function toStr(obj) {
@@ -521,7 +484,6 @@ const MODE_NORMAL = 1, MODE_ENDLESS = 2, MODE_PRACTICE = 3;
         $("#message").val(cookie("message") ? cookie("message") : "");
         if (cookie("title")) {
             $('title').text(cookie('title'));
-            $('#title').val(cookie('title'));
         }
         let keyboard = cookie('keyboard');
         if (keyboard) {
@@ -534,7 +496,7 @@ const MODE_NORMAL = 1, MODE_ENDLESS = 2, MODE_PRACTICE = 3;
             map[keyboard.charAt(3)] = 4;
         }
         if (cookie('gameTime')) {
-            $('#gameTime').val(cookie('gameTime'));
+            document.getElementById('gameTime').value = cookie('gameTime');
             _gameSettingNum = parseInt(cookie('gameTime'));
             gameRestart();
         }
@@ -548,16 +510,12 @@ const MODE_NORMAL = 1, MODE_ENDLESS = 2, MODE_PRACTICE = 3;
     w.show_setting = function() {
         $('#btn_group,#desc').css('display', 'none')
         $('#setting').css('display', 'block')
-        $('#sound').text(soundMode === 'on' ? I18N['sound-on'] : I18N['sound-off']);
     }
 
     w.save_cookie = function() {
         const settings = ['username', 'message', 'keyboard', 'title', 'gameTime'];
         for (let s of settings) {
-            let value=$(`#${s}`).val();
-            if(value){
-                cookie(s, value.toString(), 100);
-            }
+            cookie(s, $(`#${s}`).val().toString(), 100);
         }
         initSetting();
     }
