@@ -1,3 +1,11 @@
-# sy361.github.io
-这是一个别人做的小游戏
-源仓库：https://github.com/arcxingye/EatKano
+
+<div align="center">
+
+# Minecraft server website
+Simple, clean website for minecraft servers. Everything is customizable.
+<br>
+<br>
+![image](https://i.imgur.com/pM5JUDS.png)
+
+http://oliminator.net/mc-server-website/
+</div>
